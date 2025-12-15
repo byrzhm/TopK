@@ -50,8 +50,10 @@ object TopKApp {
       .takeOrdered(30)(Ordering.by[(String, Int), Int](-_._2))
 
     // Save result to output path as text file
-    val outputRDD: RDD[String] = sc.parallelize(top30.map { case (ip, count) =>
-      s"$ip\t$count"
+    val outputRDD: RDD[String] = sc.parallelize(
+      top30.zipWithIndex.map { case ((ip, count), idx) =>
+      val rank = idx + 1
+      s"$rank\t$ip\t$count"
     })
 
     outputRDD.saveAsTextFile(outputPath)
